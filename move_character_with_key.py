@@ -3,11 +3,10 @@ from pico2d import *
 TUK_WIDTH, TUK_HEIGHT = 1280, 1024
 open_canvas(TUK_WIDTH, TUK_HEIGHT)
 tuk_ground = load_image('TUK_GROUND.png')
-character = load_image('animation_sheet.png')
-
+character = load_image('my_character_resource.png')
 
 def handle_events():
-    global running, dir
+    global running, dir, state
     # fill here
 
     events = get_events()
@@ -15,6 +14,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             running = False
         elif event.type == SDL_KEYDOWN:
+            state = "running"
             if event.key == SDLK_RIGHT:
                 dir[0] += 1
             elif event.key == SDLK_LEFT:
@@ -26,6 +26,7 @@ def handle_events():
             elif event.key == SDLK_ESCAPE:
                 running = False
         elif event.type == SDL_KEYUP:
+            state = "idle"
             if event.key == SDLK_RIGHT:
                 dir[0] -= 1
             elif event.key == SDLK_LEFT:
@@ -48,15 +49,19 @@ def checkScreenOut():
 
 
 running = True
+state = "idle"
 x, y = TUK_WIDTH // 2, TUK_HEIGHT // 2
 frame = 0
 dir = [0, 0]
-hide_cursor()
+# hide_cursor()
 
 while running:
     clear_canvas()
     tuk_ground.draw(TUK_WIDTH // 2, TUK_HEIGHT // 2)
-    character.clip_draw(frame*100, 100, 100, 100, x, y)
+    if state == "idle":
+        character.clip_draw(frame*49+18, 100, 44, 60, x, y, 100, 100)
+    elif state == "running":
+        character.clip_draw(frame*47+27, 250, 44, 60, x, y, 100, 100)
     update_canvas()
     handle_events()
     frame = (frame+1) % 8
